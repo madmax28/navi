@@ -10,11 +10,12 @@ from navi.cli import NaviCli
 
 args = NaviCli()
 
+msg = None
 if args.message:
     msg = args.message
 elif select.select([sys.stdin], [], [], 0)[0]:
     msg = sys.stdin.read()
-else:
+elif args.media is None:
     sys.stderr.write("No message specified and nothing found standard input\n")
     sys.exit(-1)
 
@@ -25,7 +26,14 @@ try:
             config.client_user_password,
             config.notification_users,
             quiet=args.quiet)
-    navi.push_msg(msg)
+
+    if args.media is not None:
+        for med in args.media:
+            navi.push_media(str(med))
+
+    if msg is not None:
+        navi.push_msg(msg)
+
     navi.shutdown()
 except requests.ConnectionError:
     sys.stderr.write("Connection problem\n")
