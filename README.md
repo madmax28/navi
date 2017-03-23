@@ -32,6 +32,7 @@ Dependencies
 ------------
 
 The Matrix Python SDK requires [requests][5]. Install it with `pip install requests`.
+Navi uses filetype. Install it with `pip install filetype`.
 
 [1]: https://matrix.org
 [2]: https://github.com/matrix-org/matrix-python-sdk

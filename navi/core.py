@@ -1,4 +1,6 @@
 import sys
+import os
+import filetype
 
 from matrix_client.client import MatrixClient
 from matrix_client.errors import *
@@ -50,6 +52,33 @@ class Navi:
 
         self._log("Pushing message...")
         for r in self.rooms.values(): r.send_text(msg)
+
+    def push_media(self, filepath):
+        """ Push an image or video
+
+        Args:
+            filepath: The file path
+        """
+        self._cleanup_rooms()
+        self._create_rooms()
+
+        self._log("Pushing media...")
+
+        mime = filetype.guess(filepath).mime
+        if "image" in mime:
+            media_type = "image"
+        elif "video" in mime:
+            media_type = "video"
+        else:
+            return
+
+        with open(filepath, "rb") as fld:
+            contents = fld.read()
+            mxc = self.client.upload(contents, mime)
+            if media_type == "image":
+                for r in self.rooms.values(): r.send_image(mxc, os.path.basename(filepath))
+            elif media_type == "video":
+                for r in self.rooms.values(): r.send_video(mxc, os.path.basename(filepath))
 
     def leave_all_rooms(self):
         """ Leaves all rooms """
