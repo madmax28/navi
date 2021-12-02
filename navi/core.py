@@ -90,7 +90,7 @@ class Navi:
         """ Leaves rooms that no target user is in """
         for room_id in self.rooms.keys():
             room = self.rooms[room_id]
-            users = room.get_joined_members().keys()
+            users = map(lambda m: m.user_id, room.get_joined_members())
             if any(u in users for u in self.target_users): continue
             self._log("Leaving room {} (Name: {})".format(room_id, room.name))
             room.leave()
@@ -99,11 +99,11 @@ class Navi:
     def _create_rooms(self):
         """ Create rooms for users not found in any current room """
         # Compile list of all users
-        if self.rooms:
-            current_users = reduce(lambda a, b: a & b, map(lambda r:
-                set(r.get_joined_members().keys()), self.rooms.values()))
-        else:
-            current_users = set()
+        current_users = set()
+        for room_id in self.rooms.keys():
+            room = self.rooms[room_id]
+            room_users = map(lambda m: m.user_id, room.get_joined_members())
+            current_users = current_users.union(set(room_users))
         missing_users = self.target_users - current_users
         for u in missing_users:
             try:

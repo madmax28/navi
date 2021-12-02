@@ -1,11 +1,11 @@
-import ConfigParser
+import configparser
 from collections import namedtuple
 
 
 class NaviConfig:
 
     def __init__(self, config_file):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_file)
 
         self.sanity_check(config)
