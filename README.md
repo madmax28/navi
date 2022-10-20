@@ -6,6 +6,7 @@ Navi is a tiny bot for [Matrix][1] that sends notifications to users. It is buil
 The motivation behind Navi is to send notifications from anywhere to everywhere. This includes the push services GCM and APNs that [Riot][4] bridges to, without having to rely on services such as Pushbullet or Pushover.
 
 The first time you use it, Navi creates a new room and invites your user to it. The room will be reused afterwards. If you leave the room, so will Navi, and invite you to a new room.
+You can also specify room ids that Navi should join and push to directly. If a private room is specified, make sure that you have invited Navi to that room.
 
 Usage
 =====

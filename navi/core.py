@@ -10,7 +10,15 @@ class Navi:
     The Navi API
     """
 
-    def __init__(self, host_url, user_id, password, target_users, quiet=False):
+    def __init__(
+        self,
+        host_url,
+        user_id,
+        password,
+        target_users,
+        target_rooms,
+        quiet=False
+    ):
         """ Starts up the bot. Connects to the homeserver and logs in.
 
         Args:
@@ -22,6 +30,7 @@ class Navi:
         """
         self.quiet = quiet
         self.target_users = target_users
+        self.target_rooms = target_rooms
         self.host_url = host_url
         self.user_id = user_id
         self.password = password
@@ -49,6 +58,7 @@ class Navi:
         """
         self._cleanup_rooms()
         self._create_rooms()
+        self._join_rooms()
 
         self._log("Pushing message...")
         for r in self.rooms.values(): r.send_text(msg)
@@ -61,6 +71,7 @@ class Navi:
         """
         self._cleanup_rooms()
         self._create_rooms()
+        self._join_rooms()
 
         self._log("Pushing media...")
 
@@ -88,7 +99,8 @@ class Navi:
 
     def _cleanup_rooms(self):
         """ Leaves rooms that no target user is in """
-        for room_id in self.rooms.keys():
+        for room_id in list(self.rooms.keys()):
+            if room_id in self.target_rooms: continue
             room = self.rooms[room_id]
             users = map(lambda m: m.user_id, room.get_joined_members())
             if any(u in users for u in self.target_users): continue
@@ -111,6 +123,18 @@ class Navi:
                 self.client.create_room(invitees=[u])
             except MatrixRequestError as e:
                 Navi._handle_matrix_exception(e)
+
+    def _join_rooms(self):
+        """ Join target rooms """
+        dirty = False
+        for target_room_id in self.target_rooms:
+            if not target_room_id in self.rooms.keys():
+                self._log("Joining room {}".format(target_room_id))
+                self.client.join_room(target_room_id)
+                dirty = True
+        if dirty:
+            self._fetch_rooms()
+
 
     def _fetch_rooms(self):
         """ Fetches list of rooms """

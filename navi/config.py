@@ -17,7 +17,15 @@ class NaviConfig:
         self.client_user_id = config.get("Client", "UserId")
         self.client_user_password = config.get("Client", "UserPassword")
 
-        self.notification_users = set(config.get("Notification", "Users").split())
+        try:
+            self.notification_users = set(config.get("Notification", "Users").split())
+        except:
+            self.notification_users = set()
+
+        try:
+            self.notification_rooms = set(config.get("Notification", "Rooms").split())
+        except:
+            self.notification_rooms = set()
 
     def sanity_check(self, config):
         # TODO

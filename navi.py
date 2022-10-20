@@ -1,4 +1,4 @@
-#!env python2
+#!env python
 
 import sys
 import select
@@ -21,11 +21,14 @@ elif args.media is None:
 
 config = NaviConfig(args.config_file)
 try:
-    navi = Navi(config.server_host_url,
-            config.client_user_id,
-            config.client_user_password,
-            config.notification_users,
-            quiet=args.quiet)
+    navi = Navi(
+        config.server_host_url,
+        config.client_user_id,
+        config.client_user_password,
+        config.notification_users,
+        config.notification_rooms,
+        quiet=args.quiet
+    )
 
     if args.media is not None:
         for med in args.media:
